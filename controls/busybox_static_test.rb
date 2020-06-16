@@ -2,7 +2,7 @@ title 'Tests to confirm busybox-static works as expected'
 
 plan_name = input('plan_name', value: 'busybox-static')
 plan_ident = "#{ENV['HAB_ORIGIN']}/#{plan_name}"
-hab_path = input('hab_path', value: 'hab')
+hab_path = input('hab_path', value: '/tmp/hab')
 
 control 'core-plans-busybox-static' do
   impact 1.0
