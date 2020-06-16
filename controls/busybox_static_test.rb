@@ -34,10 +34,25 @@ control 'core-plans-busybox-static' do
   end
   busybox_pkg = busybox_pkg.stdout.strip
 
-  describe command("file #{busybox_pkg}/bin/busybox") do
+  file_pkg = command("#{hab_path} pkg path core/file")
+  describe file_pkg do
+    its('exit_status') { should eq 0 }
+    its('stdout') { should_not be_empty }
+  end
+  file_pkg = file_pkg.stdout.strip
+
+  describe command("#{file_pkg}/bin/file #{busybox_pkg}/bin/busybox") do
     its('exit_status') { should eq 0 }
     its('stdout') { should_not be_empty }
     its('stdout') { should match /statically linked/ }
+    its('stdout') { should match /#{busybox_pkg}/ }
+    its('stderr') { should be_empty }
+  end
+
+  describe command("#{busybox_pkg}/bin/busybox") do
+    its('exit_status') { should eq 0 }
+    its('stdout') { should_not be_empty }
+    its('stdout') { should match /BusyBox v#{busybox_pkg.split('/')[5]}/ }
     its('stderr') { should be_empty }
   end
 
