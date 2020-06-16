@@ -25,7 +25,7 @@ control 'core-plans-busybox-static' do
     ...
 
   Finally we confirm that the critical commands used in the studio are present.  Here, we are largely testing
-  that the plan is correct and hte plan-build behaved correctly.
+  that the plan is correct and the plan-build behaved correctly.
   '
   busybox_pkg = command("#{hab_path} pkg path #{plan_ident}")
   describe busybox_pkg do
@@ -33,6 +33,14 @@ control 'core-plans-busybox-static' do
     its('stdout') { should_not be_empty }
   end
   busybox_pkg = busybox_pkg.stdout.strip
+
+  describe command("file #{busybox_pkg}/bin/busybox") do
+    its('exit_status') { should eq 0 }
+    its('stdout') { should_not be_empty }
+    its('stdout') { should match /statically linked/ }
+    its('stderr') { should be_empty }
+  end
+
   commands_to_test = %w(awk basename bash cat chmod chown chroot cut cp dirname env grep id install
                         ln mkdir mount pwd readlink rm sed sh stat tr umount)
 
