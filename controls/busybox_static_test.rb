@@ -2,7 +2,7 @@ title 'Tests to confirm busybox-static works as expected'
 
 plan_name = input('plan_name', value: 'busybox-static')
 plan_ident = "#{ENV['HAB_ORIGIN']}/#{plan_name}"
-hab_path = input('hab_path', value: 'hab')
+hab_path = input('hab_path', value: '/tmp/hab')
 
 control 'core-plans-busybox-static' do
   impact 1.0
@@ -25,7 +25,7 @@ control 'core-plans-busybox-static' do
     ...
 
   Finally we confirm that the critical commands used in the studio are present.  Here, we are largely testing
-  that the plan is correct and hte plan-build behaved correctly.
+  that the plan is correct and the plan-build behaved correctly.
   '
   busybox_pkg = command("#{hab_path} pkg path #{plan_ident}")
   describe busybox_pkg do
@@ -33,6 +33,27 @@ control 'core-plans-busybox-static' do
     its('stdout') { should_not be_empty }
   end
   busybox_pkg = busybox_pkg.stdout.strip
+
+  file_pkg = command("#{hab_path} pkg path core/file")
+  describe file_pkg do
+    its('exit_status') { should eq 0 }
+    its('stdout') { should_not be_empty }
+  end
+  file_pkg = file_pkg.stdout.strip
+
+  describe command("#{file_pkg}/bin/file #{busybox_pkg}/bin/busybox") do
+    its('exit_status') { should eq 0 }
+    its('stdout') { should_not be_empty }
+    its('stdout') { should match /statically linked/ }
+    its('stdout') { should match /#{busybox_pkg}/ }
+  end
+
+  describe command("#{busybox_pkg}/bin/busybox") do
+    its('exit_status') { should eq 0 }
+    its('stdout') { should_not be_empty }
+    its('stdout') { should match /BusyBox v#{busybox_pkg.split('/')[5]}/ }
+  end
+
   commands_to_test = %w(awk basename bash cat chmod chown chroot cut cp dirname env grep id install
                         ln mkdir mount pwd readlink rm sed sh stat tr umount)
 
@@ -41,7 +62,6 @@ control 'core-plans-busybox-static' do
       its('exit_status') { should eq 0 }
       its('stdout') { should_not be_empty }
       its('stdout') { should match /#{busybox_command} -> busybox/ }
-      its('stderr') { should be_empty }
     end
   end
 end
