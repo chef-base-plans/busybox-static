@@ -46,14 +46,12 @@ control 'core-plans-busybox-static' do
     its('stdout') { should_not be_empty }
     its('stdout') { should match /statically linked/ }
     its('stdout') { should match /#{busybox_pkg}/ }
-    its('stderr') { should be_empty }
   end
 
   describe command("#{busybox_pkg}/bin/busybox") do
     its('exit_status') { should eq 0 }
     its('stdout') { should_not be_empty }
     its('stdout') { should match /BusyBox v#{busybox_pkg.split('/')[5]}/ }
-    its('stderr') { should be_empty }
   end
 
   commands_to_test = %w(awk basename bash cat chmod chown chroot cut cp dirname env grep id install
@@ -64,7 +62,6 @@ control 'core-plans-busybox-static' do
       its('exit_status') { should eq 0 }
       its('stdout') { should_not be_empty }
       its('stdout') { should match /#{busybox_command} -> busybox/ }
-      its('stderr') { should be_empty }
     end
   end
 end
