@@ -2,7 +2,6 @@ title 'Tests to confirm busybox-static works as expected'
 
 plan_name = input('plan_name', value: 'busybox-static')
 plan_ident = "#{ENV['HAB_ORIGIN']}/#{plan_name}"
-hab_path = input('hab_path', value: '/tmp/hab')
 
 control 'core-plans-busybox-static' do
   impact 1.0
@@ -27,14 +26,14 @@ control 'core-plans-busybox-static' do
   Finally we confirm that the critical commands used in the studio are present.  Here, we are largely testing
   that the plan is correct and the plan-build behaved correctly.
   '
-  busybox_pkg = command("#{hab_path} pkg path #{plan_ident}")
+  busybox_pkg = command("hab pkg path #{plan_ident}")
   describe busybox_pkg do
     its('exit_status') { should eq 0 }
     its('stdout') { should_not be_empty }
   end
   busybox_pkg = busybox_pkg.stdout.strip
 
-  file_pkg = command("#{hab_path} pkg path core/file")
+  file_pkg = command("hab pkg path core/file")
   describe file_pkg do
     its('exit_status') { should eq 0 }
     its('stdout') { should_not be_empty }
