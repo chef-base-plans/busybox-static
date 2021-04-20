@@ -51,7 +51,6 @@ do_prepare() {
 
   PLAN_CONTEXT="$PLAN_CONTEXT" _create_config
   sed \
-    -e '/CONFIG_STATIC/ s,^.*$,CONFIG_STATIC=y,' \
     -e '/CONFIG_FEATURE_UTMP/ s,^.*$,CONFIG_FEATURE_UTMP=n,' \
     -e '/CONFIG_FEATURE_WTMP/ s,^.*$,CONFIG_FEATURE_WTMP=n,' \
     -e '/CONFIG_INETD/ s,^.*$,CONFIG_INETD=n,' \
